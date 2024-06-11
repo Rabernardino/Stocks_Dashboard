@@ -306,7 +306,7 @@ def update_cards(acao, data):
     Output("grafico-candle", "figure"),
     [Input("acao-seletor", "value"), Input("year-seletor","value")]
 )
-def update_candle_chart(acao,year):
+def update_candle_chart(stock,year):
 
     #Creating a dataframe to filter the candle
     candle_df = cleaned_data[cleaned_data['Year'] == year]
@@ -315,10 +315,10 @@ def update_candle_chart(acao,year):
     fig1 = go.Figure(data= [go.Candlestick(
 
     x = candle_df['Day'],
-    open = candle_df[candle_df['Company_Name'] == acao]['Opening_Value'],
-    high = candle_df[candle_df['Company_Name'] == acao]['Highest_Value'],
-    low = candle_df[candle_df['Company_Name'] == acao]['Lowest_Value'],
-    close = candle_df[candle_df['Company_Name'] == acao]['Closing_Value']
+    open = candle_df[candle_df['Company_Name'] == stock]['Opening_Value'],
+    high = candle_df[candle_df['Company_Name'] == stock]['Highest_Value'],
+    low = candle_df[candle_df['Company_Name'] == stock]['Lowest_Value'],
+    close = candle_df[candle_df['Company_Name'] == stock]['Closing_Value']
 
         )])
 
@@ -328,7 +328,14 @@ def update_candle_chart(acao,year):
         autosize= True,
         margin= go.Margin(l=0, r=0, t=70, b=0),
         showlegend= False,
-        mapbox_style = 'carto-darkmatter'
+        mapbox_style = 'carto-darkmatter',
+        title=dict(
+            text=f'Candle Chart - {stock}',
+            font=dict(
+            size=16,
+            color="black"
+            )
+        )
         )
 
     return fig1
@@ -341,10 +348,10 @@ def update_candle_chart(acao,year):
 )
 
 
-def update_box_chart(acao,year):
+def update_box_chart(stock,year):
     # Lógica para gerar o gráfico boxplot
 
-    df_boxplot = cleaned_data[(cleaned_data['Company_Name'] == acao) & (cleaned_data['Year'] == year)]
+    df_boxplot = cleaned_data[(cleaned_data['Company_Name'] == stock) & (cleaned_data['Year'] == year)]
 
     #Creating a dataframe to filter the selected data
     fig2 = go.Figure()
@@ -397,7 +404,7 @@ def update_line_chart(stock, year):
         # yaxis_title='Daily Closing Variation',
         shapes=[dict(type='line', x0=variation_df['Day'].min(), x1=variation_df['Day'].max(), y0=0, y1=0, line=dict(color='black', dash='dash', width=2))],
         title=dict(
-            text='Daily Closing Evolution',
+            text=f'Closing Variation - {stock}',
             font=dict(
             size=16,
             color="black"
@@ -423,7 +430,7 @@ def update_other_chart(data):
     fig4.update_layout(
         template="ggplot2",
         autosize= False,
-        margin= go.Margin(l=5, r=10, t=10, b=5),
+        margin= go.Margin(l=5, r=10, t=30, b=5),
         xaxis=dict(
         title=dict(text="")
         ),
@@ -431,7 +438,14 @@ def update_other_chart(data):
             title=dict(text="")
         ),
         showlegend= False,
-        mapbox_style = 'carto-darkmatter'
+        mapbox_style = 'carto-darkmatter',
+        title=dict(
+            text=f'Daily Five Bigest Volume ({data})',
+            font=dict(
+            size=16,
+            color="black"
+            )
+        )
     )
 
     return fig4
