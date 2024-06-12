@@ -24,8 +24,8 @@ path = os.path.join(file_path, 'data/processed/stock_market_v3.csv')
 
 cleaned_data = pd.read_csv(path)
 
-#Charts
 
+#Charts
 fig1 = go.Figure(data= [go.Candlestick(
 
     x = cleaned_data[cleaned_data['Day'] == '2024-05-17'],
@@ -89,9 +89,10 @@ fig3.update_layout(
 
 groupedby_df = cleaned_data[cleaned_data['Day'] == '2023-12-26'].groupby(['Company_Name','Stock_Code'])['Volume'].max().nlargest(5).reset_index()
 
-fig4 = px.bar(groupedby_df, x='Company_Name', y='Volume', color='Stock_Code')
+fig4 = px.bar(groupedby_df, x='Company_Name', y='Volume')
 
 fig4.update_layout(
+    colorway= ['#EAA1B0', '#C8C990', '#A1D5B8', '#9ECDEE', '#C99EEE'],
     template="ggplot2",
     autosize= True,
     margin= go.Margin(l=5, r=10, t=10, b=5),
@@ -163,6 +164,8 @@ app.layout = dbc.Container(
                                 dcc.DatePickerSingle(
                                     id="data-seletor",
                                     date=f"{cleaned_data['Day'].min()}",
+                                    min_date_allowed=f"{cleaned_data['Day'].min()}",
+                                    max_date_allowed=f"{cleaned_data['Day'].max()}",
                                     display_format="YYYY-MM-DD",
                                     style={"margin-letf":"30px","marginBottom": "20px", "padding":"10px", "b" 'display': 'inline-block'}
                         ),
@@ -201,7 +204,9 @@ app.layout = dbc.Container(
                         ),
 
                         dbc.Row([
-                            html.Hr()
+                            html.Div([dbc.Row([
+                                html.H6('')
+                            ])])
                         ]),
 
                         dbc.Row(
@@ -234,25 +239,25 @@ app.layout = dbc.Container(
                         ),
 
                         # Gráfico de barras
-                        html.H4("Stock Prices Behavior", style={"textAlign": "center", "margin": "20px 0"}),
+                        #html.H4("Stock Prices Behavior", style={"textAlign": "center", "margin": "20px 0"}),
                         dcc.Graph(id="grafico-box", style=GRAPH_STYLE, figure=fig2),
                     ],
                     width=4,
                     style={"padding": "20px","borderRight": "1px solid #dee2e6"}
                 ),
                 dbc.Col(
-                    [
+                    [html.H4("Daily Closing Evolution", style={"textAlign": "center", "margin": "20px 0"}),
                         dbc.Row([
                             dbc.Col([
-                                # Gráfico de candle
-                                html.H4("Daily Closing Evolution", style={"textAlign": "center", "margin": "20px 0"}),
+                                # Gráfico de Linha
+                                #html.H4("Daily Closing Evolution", style={"textAlign": "center", "margin": "20px 0"}),
                                 dcc.Graph(id="grafico-one", style=GRAPH_STYLE, figure=fig3),
 
                             ], md=6),
 
                             dbc.Col([
-                                # Gráfico de linha
-                                html.H4("Top Five Volume Negotiated", style={"textAlign": "center", "margin": "20px 0"}),
+                                # Gráfico de Colunas
+                                #html.H4("Top Five Volume Negotiated", style={"textAlign": "center", "margin": "20px 0"}),
                                 dcc.Graph(id="grafico-two", style=GRAPH_STYLE, figure=fig4),
 
                             ], md=6),
@@ -261,8 +266,8 @@ app.layout = dbc.Container(
 
                         dbc.Row([
                             dbc.Col([
-                                # Outro gráfico
-                                html.H4("Candle Chart", style={"textAlign": "center", "margin": "20px 0"}),
+                                # Gráfico Candle
+                                #html.H4("Candle Chart", style={"textAlign": "center", "margin": "20px 0"}),
                                 dcc.Graph(id="grafico-candle", style=GRAPH_STYLE, figure=fig1),
                             ], md=12)
                         ])
@@ -363,14 +368,21 @@ def update_box_chart(stock,year):
             boxmean=True  # Adiciona uma linha para a média
         ))
 
-
+    
     fig2.update_layout(
     template="ggplot2",
     autosize= True,
-    margin= go.Margin(l=0, r=0, t=0, b=0),
+    margin= go.Margin(l=0, r=0, t=70, b=0),
     showlegend= False,
     mapbox_style = 'carto-darkmatter',
-    font_color='#F7FFF7'
+    font_color='#F7FFF7',
+    title=dict(
+            text=f'Stock Prices Behavior - {stock}',
+            font=dict(
+            size=16,
+            color="black"
+            )
+        )
     )
 
     return fig2
@@ -425,7 +437,9 @@ def update_other_chart(data):
     
     groupedby_df = cleaned_data[cleaned_data['Day'] == data].groupby(['Company_Name','Stock_Code'])['Volume'].max().nlargest(5).reset_index()
 
-    fig4 = px.bar(groupedby_df, x='Company_Name', y='Volume', color='Stock_Code')
+    fig4 = px.bar(groupedby_df, x='Company_Name', y='Volume', color='Stock_Code', color_discrete_sequence=['#EAA1B0', '#C8C990', '#A1D5B8', '#9ECDEE', '#C99EEE'])
+
+    #Cores colunas (#eaa1b0, #c8c990, #a1d5b8, #9ecdee, #c99eee)
 
     fig4.update_layout(
         template="ggplot2",
@@ -449,6 +463,22 @@ def update_other_chart(data):
     )
 
     return fig4
+
+@app.callback(
+    Output("data-seletor", "date"),
+    Output("data-seletor", "min_date_allowed"),
+    Output("data-seletor", "max_date_allowed"),
+    [Input("acao-seletor", "value"), Input("year-seletor","value")]
+)
+
+def update_datepicker(stock,year):
+    filtered_dates = cleaned_data[(cleaned_data['Company_Name'] == stock) & (cleaned_data['Year'] == year)]['Day']
+
+    date = filtered_dates.min()
+    min_date = filtered_dates.min()
+    max_date = filtered_dates.max()
+
+    return date, min_date, max_date
 
 
 # Rodar a aplicação

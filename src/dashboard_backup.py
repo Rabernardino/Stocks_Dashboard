@@ -126,6 +126,8 @@ app.layout = dbc.Container(
                                 dcc.DatePickerSingle(
                                     id="data-seletor",
                                     date=f"{cleaned_data['Day'].min()}",
+                                    min_date_allowed=f"{cleaned_data['Day'].min()}",
+                                    max_date_allowed=f"{cleaned_data['Day'].max()}",
                                     display_format="YYYY-MM-DD",
                                     style={"margin-letf":"30px","marginBottom": "20px", "padding":"10px", "b" 'display': 'inline-block'}
                         ),
@@ -343,6 +345,23 @@ def update_other_chart(variavel, data):
     fig = go.Figure()
     fig.update_layout(title="Outro Gráfico")
     return fig
+
+
+@app.callback(
+    Output("data-seletor", "date"),
+    Output("data-seletor", "min_date_allowed"),
+    Output("data-seletor", "max_date_allowed"),
+    [Input("acao-seletor", "value"), Input("year-seletor","value")]
+)
+
+def update_datepicker(stock,year):
+    filtered_dates = cleaned_data[(cleaned_data['Company_Name'] == stock) & (cleaned_data['Year'] == year)]['Day']
+
+    date = filtered_dates.min()
+    min_date = filtered_dates.min()
+    max_date = filtered_dates.max()
+
+    return date, min_date, max_date
 
 
 # Rodar a aplicação
