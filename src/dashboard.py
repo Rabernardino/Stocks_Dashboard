@@ -76,9 +76,13 @@ fig3 = go.Figure()
 # Adicionando a linha com a variação diária do fechamento
 fig3.add_trace(go.Scatter(x=variation_df['Day'], y=variation_df['Daily_Closing_Variation'], mode='lines', name='Daily Closing Variation'))
 
+
+fig3.update_traces(hovertemplate=None)
+
 # Atualizando o layout para definir o eixo X na linha zero
 fig3.update_layout(
     #title='Variação Diária do Fechamento ao Longo do Tempo',
+    hovermode='x',
     template="ggplot2",
     xaxis_title='Day',
     yaxis_title='Daily Closing Variation',
@@ -89,10 +93,17 @@ fig3.update_layout(
 
 groupedby_df = cleaned_data[cleaned_data['Day'] == '2023-12-26'].groupby(['Company_Name','Stock_Code'])['Volume'].max().nlargest(5).reset_index()
 
-fig4 = px.bar(groupedby_df, x='Company_Name', y='Volume')
+colors = ['#EAA1B0', '#C8C990', '#A1D5B8', '#9ECDEE', '#C99EEE']
+
+fig4 = go.Figure()
+
+fig4.add_trace(go.Bar(x=groupedby_df['Company_Name'], y=groupedby_df['Volume'], marker=dict(color=colors),
+                        hovertemplate=
+                            '<br>Company Name:<br> %{x}' + '<br>Stock Volume:</br> %{y:f}MM<extra></extra>',showlegend=False))
+
+
 
 fig4.update_layout(
-    colorway= ['#EAA1B0', '#C8C990', '#A1D5B8', '#9ECDEE', '#C99EEE'],
     template="ggplot2",
     autosize= True,
     margin= go.Margin(l=5, r=10, t=10, b=5),
@@ -127,9 +138,12 @@ app.layout = dbc.Container(
                 dbc.Col(
                     [
                         # Logo da empresa
-                        html.Img(src="/docs/logo.png", style={"width": "100px", "margin": "20px 0"}),
+                        html.Div([
+                        html.Img(id='logo', src=app.get_asset_url('logo_dark.png'), height=20),
+                        html.H4('Stock Market Analysis', style={'text-align':'center', 'margin-top':'50px','margin-bottom':'10px'}),
+                        ]),
+                        #html.Img(src="/docs/logo_dark.png", style={"width": "100px", "margin": "20px 0"}),
 
-                        html.H4('Stock Market Analysis', style={'text-align':'center', 'margin-bottom':'30px'}),
 
 
                         # Seletor de variável e data
@@ -160,7 +174,7 @@ app.layout = dbc.Container(
 
                         html.Div(
                             [
-                                html.Label("Selecione o Dia:"),
+                                html.Label("Select the day:"),
                                 dcc.DatePickerSingle(
                                     id="data-seletor",
                                     date=f"{cleaned_data['Day'].min()}",
@@ -403,11 +417,16 @@ def update_line_chart(stock, year):
     fig3 = go.Figure()
 
     # Adicionando a linha com a variação diária do fechamento
-    fig3.add_trace(go.Scatter(x=variation_df['Day'], y=variation_df['Daily_Closing_Variation'], mode='lines', name='Daily Closing Variation'))
+    fig3.add_trace(go.Scatter(x=variation_df['Day'], y=variation_df['Daily_Closing_Variation'], mode='lines', name='Daily Closing Variation', 
+                              hovertemplate='%{y:.2f}<extra></extra>',showlegend=False))
+
+    #Modifying the hover template exhibition 
+    #fig3.update_traces(hovertemplate=None)
 
     # Atualizando o layout para definir o eixo X na linha zero
     fig3.update_layout(
         #title='Variação Diária do Fechamento ao Longo do Tempo',
+        hovermode='x unified',
         template="ggplot2",
         autosize= False,
         # paper_bgcolor = '#282828',
@@ -435,9 +454,18 @@ def update_line_chart(stock, year):
 )
 def update_other_chart(data):
     
-    groupedby_df = cleaned_data[cleaned_data['Day'] == data].groupby(['Company_Name','Stock_Code'])['Volume'].max().nlargest(5).reset_index()
+    colors = ['#EAA1B0', '#C8C990', '#A1D5B8', '#9ECDEE', '#C99EEE']
 
-    fig4 = px.bar(groupedby_df, x='Company_Name', y='Volume', color='Stock_Code', color_discrete_sequence=['#EAA1B0', '#C8C990', '#A1D5B8', '#9ECDEE', '#C99EEE'])
+    fig4 = go.Figure()
+
+    fig4.add_trace(go.Bar(x=groupedby_df['Company_Name'], y=groupedby_df['Volume'], marker=dict(color=colors),
+                        hovertemplate=
+                            '<br>%{x}' + '<br>Stock Volume:</br> %{y:,.0f}MM<extra></extra>',showlegend=False))
+
+
+    # groupedby_df = cleaned_data[cleaned_data['Day'] == data].groupby(['Company_Name','Stock_Code'])['Volume'].max().nlargest(5).reset_index()
+
+    # fig4 = px.bar(groupedby_df, x='Company_Name', y='Volume', color='Stock_Code', color_discrete_sequence=['#EAA1B0', '#C8C990', '#A1D5B8', '#9ECDEE', '#C99EEE'])
 
     #Cores colunas (#eaa1b0, #c8c990, #a1d5b8, #9ecdee, #c99eee)
 
