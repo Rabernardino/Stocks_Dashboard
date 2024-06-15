@@ -138,10 +138,15 @@ app.layout = dbc.Container(
                 dbc.Col(
                     [
                         # Logo da empresa
-                        html.Div([
-                        html.Img(id='logo', src=app.get_asset_url('logo_dark.png'), height=20),
-                        html.H4('Stock Market Analysis', style={'text-align':'center', 'margin-top':'50px','margin-bottom':'10px'}),
+                        dbc.Row([
+                            dbc.Col(
+                                [html.Div(
+                                    [html.Img(id='logo', src='https://www.avatrade.com/wp-content/uploads/2022/10/what-is-a-stock-market-crash.png.webp', height=75, width=150, style={'text-align':'right', 'margin-top': '10px'}),
+                                    html.H3('Stock Market Dashboard', style={'text-align':'center', 'margin-top':'30px','margin-bottom':'40px'})
+                                    ]),
+                                ]),
                         ]),
+                        
                         #html.Img(src="/docs/logo_dark.png", style={"width": "100px", "margin": "20px 0"}),
 
 
