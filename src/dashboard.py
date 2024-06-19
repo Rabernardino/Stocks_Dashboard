@@ -298,6 +298,7 @@ app.layout = dbc.Container(
             ]
         )
     ],
+    className="container",
     fluid=True,
 )
 
@@ -359,8 +360,10 @@ def update_candle_chart(stock,year):
             size=16,
             color="black"
             )
-        )
-        )
+        ),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)'
+    )
 
     return fig1
 
@@ -401,7 +404,9 @@ def update_box_chart(stock,year):
             size=16,
             color="black"
             )
-        )
+        ),
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)'
     )
 
     return fig2
@@ -445,7 +450,9 @@ def update_line_chart(stock, year):
             size=16,
             color="black"
             )
-        )
+        ),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)'
     )
 
 
@@ -492,7 +499,9 @@ def update_other_chart(data):
             size=16,
             color="black"
             )
-        )
+        ),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)'
     )
 
     return fig4

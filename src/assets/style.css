@@ -1,0 +1,8 @@
+
+
+/* Estilo geral do container */
+.container {
+    background: linear-gradient(to bottom, white 0%, white 20%, rgb(241, 241, 241) 60%, rgb(241, 241, 241) 100%);
+    padding: 20px;
+    min-height: 100vh;
+}
